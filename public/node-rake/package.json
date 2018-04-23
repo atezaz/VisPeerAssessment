@@ -1,0 +1,91 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "node-rake",
+        "scope": null,
+        "escapedName": "node-rake",
+        "name": "node-rake",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "C:\\cm code\\course-mapper-peer-assessment-dev"
+    ]
+  ],
+  "_from": "node-rake@latest",
+  "_id": "node-rake@0.0.9",
+  "_inCache": true,
+  "_location": "/node-rake",
+  "_nodeVersion": "6.9.1",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/node-rake-0.0.9.tgz_1487353146488_0.9332760348916054"
+  },
+  "_npmUser": {
+    "name": "waseem18",
+    "email": "wasim@thabraze.me"
+  },
+  "_npmVersion": "3.10.8",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "node-rake",
+    "scope": null,
+    "escapedName": "node-rake",
+    "name": "node-rake",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/node-rake/-/node-rake-0.0.9.tgz",
+  "_shasum": "bc118968db0f7a1e4519ace7de3db96b3143e7b5",
+  "_shrinkwrap": null,
+  "_spec": "node-rake",
+  "_where": "C:\\cm code\\course-mapper-peer-assessment-dev",
+  "author": {
+    "name": "Wasim Thabraze"
+  },
+  "bugs": {
+    "url": "https://github.com/waseem18/node-rake/issues"
+  },
+  "dependencies": {},
+  "description": "A NodeJS implementation of the Rapid Automatic Keyword Extraction algorithm.",
+  "devDependencies": {
+    "babel-jest": "^18.0.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.22.0",
+    "jest": "^18.1.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "bc118968db0f7a1e4519ace7de3db96b3143e7b5",
+    "tarball": "https://registry.npmjs.org/node-rake/-/node-rake-0.0.9.tgz"
+  },
+  "gitHead": "1cd26fc8b63cc45a45d80d8f3351998ab6f0541f",
+  "homepage": "https://github.com/waseem18/node-rake#readme",
+  "keywords": [
+    "keyword-extraction"
+  ],
+  "license": "MIT",
+  "main": "app.js",
+  "maintainers": [
+    {
+      "name": "waseem18",
+      "email": "wasim@thabraze.me"
+    }
+  ],
+  "name": "node-rake",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/waseem18/node-rake.git"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "version": "0.0.9"
+}
