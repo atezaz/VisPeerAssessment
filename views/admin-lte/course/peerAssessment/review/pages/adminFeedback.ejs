@@ -158,33 +158,68 @@
                                             </table>
                                         </fieldset>
 
-
                                         <div ng-show="reviews.length > 0" class="form-group">
                                             <fieldset>
                                                 <div class="col-sm-12">
                                                     <div class="col-sm-6">
-                                                        <div id="scatterChart"></div>
+                                                            <label style="text-align: center; font-size: 16px;" class="col-sm-12">{{solution.studentName}} obtained marks</label>
+                                                        <div id="marksObtainedBarChart"></div>
                                                     </div>
 
                                                     <div class="col-sm-6">
+                                                            <label style="text-align: center; font-size: 16px;" class="col-sm-12">{{solution.studentName}} obtained marks mean</label>
                                                         <div id="totalMarksMeanPieChart"></div>
                                                     </div>
                                                 </div>
                                             </fieldset>
 
                                             <fieldset>
+                                                <div>
                                                 <label style="text-align: center; font-size: 18px;margin-top: 58px; margin-bottom: 20px;" class="col-sm-12">Peer reviews similarity report</label>
                                                 <div class="col-sm-12" ng-bind-html="rTable"></div>
+                                            </div>
+
+                                             <div ng-show="!analyzedRewiewData">
+                                                    <br>
+                                                    <br>
+                                                    <label style="text-align: center; font-size: 18px;" class="col-sm-12">No data available, Review Mapping is 1 to 1</label>
+                                            </div>
                                             </fieldset>
 
-                                        </div>
-                                        <div ng-show="reviews.length > 0" class="col-sm-12">
-                                            <div class="col-sm-6">
+                                            <div ng-show="analyzedRewiewData" class="col-sm-12">
+                                                <div class="col-sm-6"></div>
 
-                                                <label style="text-align: center; font-size: 18px;margin-top: 58px; margin-bottom: 20px;" class="col-sm-12">Peer reverse reviews</label>
+                                                <div style="margin-bottom: -54px; " class="col-sm-6">
+                                                    <fieldset style="
+                                                    text-align:center;
+                                                    border: 1px groove threedface;
+                                                    padding: 0.5em;
+                                                    margin: 4px;
+                                                    border-style: groove;
+                                                    font-size: 16px;
+                                                    font-style: italic;
+                                                    width: fit-content;
+                                                    float: right;">
+                                                        <legend style=" margin-bottom: -6px; width: 71px; border-bottom: 0px; ">Where:</legend>
+
+                                                        <span ng-repeat="legend in legends">
+                                                            <b><img src="/img/bullet.jpg">{{legend}}&nbsp; &nbsp;</b>
+                                                        </span>
+                                                    </fieldset>
+                                                </div>
+
+                                            </div>
+                                            
+                                     
+
+                                        </div>
+                                        <div  class="col-sm-12">
+                                            <div ng-show="analyzedRewiewData" class="col-sm-6">
+
+                                                <label style="text-align: center; font-size: 16px;margin-top: 58px;" class="col-sm-12">Peers reverse reviews</label>
 
                                                 <!-- <div style="text-align: center; font-size: 15px;" ng-repeat="legend in userLegend"> </div> -->
-                                                <div class="col-sm-12" id="wordtree_legend" style="width: 500px; height: 350px;"></div>
+                                                <div class="col-sm-12" id="ReverseReviewsBarChart" style="width: 500px; height: 350px;"></div>
                                             </div>
 
                                             <div class="col-sm-6">
@@ -192,14 +227,17 @@
                                                 <br>
                                                 <br>
                                                 <div>
-                                                    <label style="text-align: center; font-size: 18px;" class="col-sm-12">{{solution.studentName}} overall review(s) rating history</label>
-                                                    <br><br>  <br><div id="ratingPieChart"></div>
+                                                    <label style="text-align: center; font-size: 16px;" class="col-sm-12">{{solution.studentName}} reviews rating history</label>
+                                                    <br>
+                                                    <br>
+                                                    <br>
+                                                    <div id="ratingPieChart"></div>
                                                 </div>
 
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-12" ng-show="reviews.length == 0">
+                                        <div class="col-sm-12" ng-show="" ng-show="reviews.length == 0">
                                             <label style="text-align: center; font-size: 18px;" class="col-sm-12">No review(s) rating available</label>
                                         </div>
 
