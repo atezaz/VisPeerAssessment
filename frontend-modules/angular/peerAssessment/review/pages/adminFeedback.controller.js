@@ -36,9 +36,10 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
                 }
                 $scope.solution = solution;
                 console.log('Solution', solution)
-
                 fetchPeerReviewsRating();   // Uncomment when needed
                 fetchPeerReverseReviewsRating();
+                
+
             }
         }, function (err) {
             // Check for proper error message later
@@ -73,7 +74,7 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
                     }
                 })
 
-                DrawScatterChart(userMarksToPlot);
+                DrawBarChartObtainedMarks(userMarksToPlot);
                 DrawMeanPieChart(userMarksToPlot);
 
             }
@@ -169,7 +170,7 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
                                 }
                                 ratingMeanAll = ratingMeanAll / totalReviewsToDivide;
                                 var finalValue = (ratingMeanAll / 5) * 100; //because Maximum rating is 5, and converting it to %
-                                newReviewRatingObj[userName] = userName +"("+ finalValue.toFixed(1) +"%)"; // this object is used in the Word Tree below to show the % reverse reviews
+                                newReviewRatingObj[userName] = finalValue.toFixed(0); // this object is used in the bar chart below to show the % of reverse reviews
                                 userName = "";
                         }
                     }, function (err) {
@@ -488,7 +489,7 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
         AnalyzedReviewsToVisualize();
     }
 
-    var treeData = "";
+
     var AnalyzingReviews = function () {
         var url = '/api/peerassessment/' + $scope.course._id + '/analyzedReviews?rName=AFCFetchPeerReviews&solutionId=' + vId + '&isAdminReview=false&isSubmitted=true';
         $http.get(url).then(function (response) {
@@ -524,19 +525,12 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
                 // $scope.userLegend = userLegends;
                 // treeData += "[ ['Phrases', 'size', { role: 'style' }],";
 
-                treeData += "[['Phrases', 'size'],";
+                var LegendArr = [];
+                for (var legend in reviewUserNameStrObj) {
 
-                for (var legends in reviewUserNameStrObj) {
-                    treeData += "['Reviewers " + legends + "', 1],";
+                    var s1 = legend.replace("=", " = ");
+                    LegendArr.push(s1);
                 }
-                treeData = treeData.slice(0, -1); //to remove last extra comma(,) added
-                treeData += "]"
-
-
-                google.charts.load('current', {
-                    packages: ['wordtree']
-                });
-                google.charts.setOnLoadCallback(DrawWordTree);
 
                 var reviewArray = Object.entries(obj);
                 var rubricArray = Object.entries(reviewRubricStrObj);
@@ -581,7 +575,13 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
                 strTable += "</tbody>";
                 strTable += "</table>";
 
+                $scope.legends = LegendArr;
                 $scope.rTable = $sce.trustAsHtml(strTable);
+                $scope.analyzedRewiewData = true;
+                DrawReverseReviewsBarChart();
+            }
+            else{
+                $scope.analyzedRewiewData = false;
             }
         }, function (err) {
             // Check for proper error message later
@@ -590,34 +590,62 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
     }
 
 
-    function DrawWordTree() {
-        var str = treeData.replace(/'/g, "\""); //for JSON
+    function DrawReverseReviewsBarChart() {
 
-        var re = new RegExp(Object.keys(newReviewRatingObj).join("|"),"gi");
-        str = str.replace(re, function(matched){
-          return newReviewRatingObj[matched];
+   
+        var rReviewsArray = Object.entries(newReviewRatingObj);
+
+        var barChart = c3.generate({
+            bindto: '#ReverseReviewsBarChart',
+            data: {
+                columns: [
+                  
+                ],
+                type: 'bar'
+            },
+            legend: {
+                position: 'right'
+            },
+            color: {
+                pattern: ['#1f77b4', '#2ca02c' , '#ff7f0e',  '#9467bd', '#aec7e8', '#98df8a', '#bcbd22', '#ff7f0e',  '#9467bd',  '#e377c2','#aec7e8', '#98df8a', '#d62728', '#ff9896','#1f77b4', '#2ca02c' , '#ff7f0e',  '#9467bd',  '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
+                    },
+            bar: {
+                width: {
+                    ratio: 0.6 // this makes bar width 50% of length between ticks
+                }
+            },
+            axis : {
+                rotated: true,
+                x : {
+                    type : 'categorized',
+                    tick: {
+                        format: function (x) { return ''; }
+                    }
+                },
+                y : {
+                    type : 'categorized',
+                    tick: {
+                       
+                    }
+                }
+            }
         });
 
-        
-        // var reverseReviewStr="";
-        // var str2;
-        // var reverseReviewArr = Object.entries(newReviewRatingObj); //to concat the Reverse reviews in the Word Tree 
+        for (var j = 0; j < rReviewsArray.length; j++) {
+            callSetTimeOut(rReviewsArray, j); //
+        }
 
-        // for (var i = 0; i < reverseReviewArr.length; i++) {
-        //     str2 = str.replace(reverseReviewArr[i][0], reverseReviewArr[i][0] +"("+ reverseReviewArr[i][1] +")");
-        //     reverseReviewStr = str2;
-        // }
+        function callSetTimeOut(rReviewsArray, loop) {
+            setTimeout(function () {
+                barChart.load({
+                    columns: [
+                        [rReviewsArray[loop][0], rReviewsArray[loop][1]]
+                    ]
+                });
+            }, (loop * 1000));
+        }
 
         
-        var data = google.visualization.arrayToDataTable($.parseJSON(str));
-        var options = {
-            wordtree: {
-                format: 'implicit',
-                word: 'Reviewers',
-            }
-        };
-        var chart = new google.visualization.WordTree(document.getElementById('wordtree_legend'));
-        chart.draw(data, options);
     }
 
 
@@ -690,10 +718,6 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
         })
     }
 
-
-
-
-
     function DrawDonutChart(matches, idStr) {
         var widthNum = 50;
         if (idStr == "Mean") {
@@ -709,8 +733,8 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
                 ],
                 type: 'donut',
                 colors: {
-                    Matches: '#059E00', //Green
-                    Mismatches: '#EE0909' //Red
+                    Matches: '#1f77b4', //Blue
+                    Mismatches: '#66c2ff' //Light Blue
                 },
                 color: function (color, d) {
                     return color;
@@ -749,8 +773,8 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
                 ],
                 order: null,
                 colors: {
-                    Matches: '#059E00', //Green Matches
-                    Mismatches: '#EE0909' //Red Mismatches
+                    Matches: '#1f77b4', //Blue
+                    Mismatches: '#66c2ff' //Light Blue
                 },
                 color: function (color, d) {
                     return color;
@@ -822,8 +846,8 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
                     ],
                     type: 'donut',
                     colors: {
-                        Positive: '#059E00', //Green
-                        Negitive: '#EE0909' //Red
+                        Positive: '#1f77b4', //blue
+                        Negitive: '#66c2ff' //l.blue
                     },
                     color: function (color, d) {
                         return color;
@@ -852,7 +876,7 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
 
     }
 
-    function DrawScatterChart(data) {
+    function DrawBarChartObtainedMarks(data) {
         var totalReviews = data.length;
         if (totalReviews > 0) {
 
@@ -870,32 +894,29 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
                 return a[1] - b[1];
             });
 
-            var minValue = sortedData[0][1];
-
-            var scatterChart = c3.generate({
-                point: {
-                    r: 10
-                },
-                bindto: '#scatterChart',
+            var barChart = c3.generate({
+                bindto: '#marksObtainedBarChart',
                 data: {
                     columns: [
-                        //[sortedData[0][0] , sortedData[0][1]],
+                      
                     ],
-                    types: 'scatter'
+                    type: 'bar'
                 },
-                axis: {
-                    y: {
-                        padding: {
-                            bottom: 0
+                color: {
+                    pattern: ['#1f77b4', '#2ca02c' , '#ff7f0e',  '#9467bd', '#aec7e8', '#98df8a', '#d62728', '#ff9896', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
                         },
-                        min: minValue - 5
-                    },
-                    x: {
-                        padding: {
-                            left: 0
-                        },
-                        min: 0,
-                        show: true
+                bar: {
+                    width: {
+                        ratio: 0.6 // this makes bar width 50% of length between ticks
+                    }
+                },
+                axis : {
+                    
+                    x : {
+                        type : 'categorized',
+                        tick: {
+                            format: function (x) { return ''; }
+                        }
                     }
                 }
             });
@@ -906,7 +927,7 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
 
             function callSetTimeOut(sortedData, loop) {
                 setTimeout(function () {
-                    scatterChart.load({
+                    barChart.load({
                         columns: [
                             [sortedData[loop][0], sortedData[loop][1]]
                         ]
@@ -947,8 +968,8 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
                     ],
                     type: 'donut',
                     colors: {
-                        Marks: '#059E00', //Green
-                        subMarks: '#EE0909' //Red
+                        Marks: '#1f77b4', //Green 059E00
+                        subMarks: '#66c2ff' //Red ff8000 ff7f0e  EE0909
                     },
                     color: function (color, d) {
                         return color;
@@ -1167,16 +1188,15 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
         });
     }
 
-    function similarityComputation(solArray, userArray) { //to find same words
+    function similarityComputation(solArray, userArray) { 
 
         var ret = [];
 
-        for (var i in solArray) {
+        for (var i in solArray) {                         //to find same words
             if (userArray.indexOf(solArray[i]) > -1) {
                 ret.push(solArray[i]);
             }
         }
-
 
         var uniqueList = ret.filter(function (allItems, i, a) //remove duplications
             {
@@ -1184,12 +1204,14 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
             });
 
 
+            
+
         var cleanUniqueArray = new Array();
-        for (var i = 0; i < uniqueList.length; i++) {
+        for (var i = 0; i < uniqueList.length; i++) {  //cleaning array from empty elements
             if (uniqueList[i]) {
                 cleanUniqueArray.push(uniqueList[i]);
             }
-        } //cleaning array from empty elements
+        } 
         return cleanUniqueArray;
     };
 
@@ -1198,8 +1220,6 @@ app.controller('AdminFeedbackController', function ($scope, $http, toastr, $wind
             return [value];
         });
     }
-
-
 
     Object.size = function (object) {
         var size = 0,
