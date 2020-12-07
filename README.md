@@ -1,4 +1,4 @@
-# Course Mapper
+# Course Mapper - Visual Peer Assessment
 
 ### Pre-requisities:
 1. MongoDB
